@@ -1,0 +1,113 @@
+:root {
+  --ink: #0b3c4d;
+  --sea: #0e6e8c;
+  --bg: #eaf6f4;
+  --line: #c9e3de;
+  --ok: #2e9f5b;
+  --ok-dark: #1f7a43;
+  --ok-bg: #ddf4e4;
+  --bad: #d9434e;
+  --bad-dark: #9b2430;
+  --bad-bg: #fce1e3;
+  --sun: #ffb92e;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: ui-rounded, 'SF Pro Rounded', Nunito, 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+button { font: inherit; cursor: pointer; }
+:focus-visible { outline: 3px solid var(--sea); outline-offset: 3px; }
+
+.app { max-width: 480px; margin: 0 auto; min-height: 100dvh; display: flex; flex-direction: column; }
+.center { align-items: center; justify-content: center; text-align: center; padding: 24px; }
+.grow { flex: 1; min-width: 0; }
+
+/* ── ProgressBar ── */
+.stats { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 12px 16px 8px; }
+.stats-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.chip { background: #fff; border: 2px solid var(--line); border-radius: 999px; padding: 1px 12px; font-size: 15px; font-weight: 800; }
+.bar { height: 16px; background: #fff; border: 2px solid var(--line); border-radius: 999px; overflow: hidden; }
+.bar > span { display: block; height: 100%; background: var(--ok); border-radius: 999px; transition: width 0.4s ease; }
+.bar-label { margin: 4px 0 0; font-size: 14px; font-weight: 700; }
+
+/* ── Peta belajar ── */
+.home { padding: 0 16px 56px; }
+.path { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; gap: 26px; }
+.subject-title { width: 100%; margin-top: 18px; text-align: center; }
+.subject-title h2 { margin: 0; font-size: 22px; font-weight: 900; color: var(--accent); }
+.stop { width: 180px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.node {
+  position: relative; width: 92px; height: 92px; border: 0; border-radius: 50%;
+  background: var(--accent); color: #fff; font-size: 42px;
+  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.25);
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+.node:not(:disabled):active { transform: translateY(6px); box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25); }
+.stop.current .node { box-shadow: 0 8px 0 rgba(0, 0, 0, 0.25), 0 0 0 8px rgba(255, 185, 46, 0.6); animation: pulse 1.8s ease-in-out infinite; }
+.stop.locked .node { background: #b9cdd0; box-shadow: 0 8px 0 #9db3b7; cursor: not-allowed; }
+.check {
+  position: absolute; right: -4px; bottom: -4px; width: 32px; height: 32px; display: grid; place-items: center;
+  border-radius: 50%; background: var(--ok); border: 3px solid var(--bg); font-size: 16px; font-weight: 900;
+}
+.stop-title { margin-top: 14px; font-size: 19px; line-height: 1.25; }
+.stop-sub { font-size: 15px; }
+.stop-info { margin-top: 2px; font-size: 14px; font-weight: 800; color: var(--sea); }
+.stop.locked .stop-title, .stop.locked .stop-sub { opacity: 0.6; }
+
+/* ── Mengerjakan soal ── */
+.lesson-top { display: flex; align-items: flex-start; padding-right: 16px; }
+.close { margin: 14px 0 0 12px; width: 44px; height: 44px; flex: none; border: 0; background: transparent; font-size: 22px; color: var(--ink); }
+.qcard { flex: 1; display: flex; flex-direction: column; padding: 8px 16px 0; animation: enter 0.25s ease-out; }
+.speak { align-self: flex-start; margin-bottom: 8px; padding: 6px 14px; border: 2px solid var(--line); border-radius: 999px; background: #fff; color: var(--sea); font-size: 15px; font-weight: 800; }
+.passage { margin: 0 0 12px; padding: 12px 14px; background: #fff; border: 2px solid var(--line); border-left: 8px solid var(--sea); border-radius: 12px; }
+.prompt { margin: 6px 0 16px; font-size: 22px; font-weight: 900; line-height: 1.35; white-space: pre-line; }
+.options { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.option {
+  width: 100%; min-height: 64px; display: flex; align-items: center; gap: 12px; text-align: left;
+  padding: 10px 16px; background: #fff; color: var(--ink); font-size: 20px; font-weight: 800;
+  border: 2px solid var(--line); border-bottom-width: 6px; border-radius: 16px;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+}
+.option:not(:disabled):hover { background: #f3fbfa; border-color: var(--sea); }
+.option:not(:disabled):active { transform: translateY(3px); border-bottom-width: 3px; }
+.option:disabled { cursor: default; }
+.key { width: 34px; height: 34px; flex: none; display: grid; place-items: center; border: 2px solid var(--line); border-radius: 10px; font-size: 16px; }
+.option.is-correct { background: var(--ok-bg); border-color: var(--ok); color: var(--ok-dark); }
+.option.is-wrong { background: var(--bad-bg); border-color: var(--bad); color: var(--bad-dark); animation: shake 0.3s; }
+.option.is-dim { opacity: 0.55; }
+
+.feedback { position: sticky; bottom: 0; margin: 20px -16px 0; padding: 14px 16px 18px; border-top: 3px solid; }
+.feedback.ok { background: var(--ok-bg); border-color: var(--ok); color: var(--ok-dark); }
+.feedback.bad { background: var(--bad-bg); border-color: var(--bad); color: var(--bad-dark); }
+.feedback h3 { margin: 0 0 4px; font-size: 20px; }
+.feedback p { margin: 0 0 6px; font-size: 17px; color: var(--ink); }
+
+.btn {
+  width: 100%; min-height: 56px; margin-top: 10px; border: 0; border-radius: 16px;
+  background: var(--ok); color: #fff; font-size: 20px; font-weight: 900; box-shadow: 0 5px 0 var(--ok-dark);
+}
+.btn:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--ok-dark); }
+.feedback.bad .btn { background: var(--bad); box-shadow: 0 5px 0 var(--bad-dark); }
+.btn-ghost { background: transparent; color: var(--sea); box-shadow: none; border: 2px solid var(--line); }
+
+/* ── Hasil ── */
+.result h1 { margin: 8px 0; font-size: 30px; }
+.result-emoji { font-size: 72px; }
+.result-score { font-size: 22px; font-weight: 900; margin: 0 0 8px; }
+.result .btn { max-width: 320px; }
+
+@keyframes pulse { 50% { transform: scale(1.06); } }
+@keyframes enter { from { opacity: 0; transform: translateX(16px); } }
+@keyframes shake { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
