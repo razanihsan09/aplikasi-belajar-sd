@@ -1,0 +1,1 @@
+if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/aplikasi-belajar-sd/sw.js', { scope: '/aplikasi-belajar-sd/' })})}
