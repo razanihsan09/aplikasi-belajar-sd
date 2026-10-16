@@ -10,13 +10,15 @@ export default function LessonList({ lessons, progress, onSelect }) {
         const status = row?.completed ? 'done' : prevDone ? 'current' : 'locked';
         const subject = SUBJECTS[lesson.subject];
         const newSubject = i === 0 || lessons[i - 1].subject !== lesson.subject;
-        const shift = Math.round(Math.sin(i * 1.1) * 48); 
+        
+        // Jarak zig-zag diperbesar menjadi 60px agar garis miring terlihat lebih jelas
+        const shift = Math.round(Math.sin(i * 1.1) * 60); 
 
         const info =
           status === 'done'
-            ? `Skor terbaik ${row.bestScore} dari ${row.total}`
+            ? `Terbaik ${row.bestScore}/${row.total}`
             : status === 'locked'
-              ? 'Selesaikan modul sebelumnya'
+              ? 'Terkunci'
               : `+${lesson.xpReward} XP`;
 
         return (
@@ -37,7 +39,9 @@ export default function LessonList({ lessons, progress, onSelect }) {
                 onClick={() => onSelect(lesson)}
                 aria-label={`${lesson.title}. ${info}`}
               >
-                <span aria-hidden="true">{status === 'locked' ? '🔒' : lesson.icon}</span>
+                <span aria-hidden="true" style={{ fontSize: '38px', filter: 'drop-shadow(0 2px 2px rgba(0,0,0,0.2))' }}>
+                  {status === 'locked' ? '🔒' : lesson.icon}
+                </span>
                 {status === 'done' && <span className="check" aria-hidden="true">✓</span>}
               </button>
               <strong className="stop-title">{lesson.title}</strong>

@@ -1,8 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&display=swap');
+
 :root {
   --ink: #0b3c4d;
   --sea: #0e6e8c;
   --bg: #eaf6f4;
-  --line: #c9e3de;
+  --line: #b9dcd6; /* Sedikit digelapkan agar lebih terlihat */
   --ok: #2e9f5b;
   --ok-dark: #1f7a43;
   --ok-bg: #ddf4e4;
@@ -16,97 +18,122 @@
 
 body {
   margin: 0;
-  background: var(--bg);
-  color: var(--ink);
-  font-family: ui-rounded, 'SF Pro Rounded', Nunito, 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+  /* Font yang lebih playful dan ramah anak */
+  font-family: 'Baloo 2', 'SF Pro Rounded', Nunito, 'Segoe UI', system-ui, sans-serif;
   font-size: 18px;
   line-height: 1.5;
+  color: var(--ink);
+  
+  /* Latar belakang polka dot ceria */
+  background-color: var(--bg);
+  background-image: radial-gradient(var(--line) 15%, transparent 15%);
+  background-size: 24px 24px;
 }
 
 button { font: inherit; cursor: pointer; }
 :focus-visible { outline: 3px solid var(--sea); outline-offset: 3px; }
 
-.app { max-width: 480px; margin: 0 auto; min-height: 100dvh; display: flex; flex-direction: column; }
+.app { max-width: 480px; margin: 0 auto; min-height: 100dvh; display: flex; flex-direction: column; background: rgba(255,255,255,0.4); backdrop-filter: blur(4px); }
 .center { align-items: center; justify-content: center; text-align: center; padding: 24px; }
 .grow { flex: 1; min-width: 0; }
 
 /* ── ProgressBar ── */
-.stats { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 12px 16px 8px; }
+.stats { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 12px 16px 8px; border-bottom: 2px solid var(--line); }
 .stats-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
-.chip { background: #fff; border: 2px solid var(--line); border-radius: 999px; padding: 1px 12px; font-size: 15px; font-weight: 800; }
-.bar { height: 16px; background: #fff; border: 2px solid var(--line); border-radius: 999px; overflow: hidden; }
-.bar > span { display: block; height: 100%; background: var(--ok); border-radius: 999px; transition: width 0.4s ease; }
+.chip { background: #fff; border: 2px solid var(--line); border-radius: 999px; padding: 1px 12px; font-size: 15px; font-weight: 800; box-shadow: 0 2px 0 var(--line); }
+.bar { height: 18px; background: #fff; border: 2px solid var(--line); border-radius: 999px; overflow: hidden; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
+.bar > span { display: block; height: 100%; background: var(--ok); border-radius: 999px; transition: width 0.4s ease; box-shadow: inset 0 -3px 0 rgba(0,0,0,0.15); }
 .bar-label { margin: 4px 0 0; font-size: 14px; font-weight: 700; }
 
 /* ── Peta belajar ── */
 .home { padding: 0 16px 56px; }
-.path { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; gap: 26px; }
-.subject-title { width: 100%; margin-top: 18px; text-align: center; }
-.subject-title h2 { margin: 0; font-size: 22px; font-weight: 900; color: var(--accent); }
-.stop { width: 180px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.path { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; gap: 40px; position: relative; }
+.subject-title { width: 100%; margin-top: 18px; text-align: center; z-index: 2; }
+.subject-title h2 { margin: 0; font-size: 26px; font-weight: 800; color: var(--accent); text-shadow: 0 2px 0 #fff; }
+
+.stop { width: 180px; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; z-index: 2; }
+
+/* Garis penghubung antar modul (Path Line) */
+.stop::after {
+  content: ""; position: absolute; top: 92px; left: 50%;
+  width: 12px; height: 80px;
+  background: var(--line); border-radius: 6px;
+  transform: translateX(-50%); z-index: -1;
+}
+.stop:last-child::after, .stop.locked::after { opacity: 0.3; } /* Garis samar untuk level terkunci */
+.stop:last-child::after { display: none; } /* Sembunyikan garis di level terakhir */
+
 .node {
   position: relative; width: 92px; height: 92px; border: 0; border-radius: 50%;
   background: var(--accent); color: #fff; font-size: 42px;
-  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.25);
-  transition: transform 0.1s, box-shadow 0.1s;
+  box-shadow: 0 10px 0 rgba(0, 0, 0, 0.25), inset 0 -4px 0 rgba(0,0,0,0.15);
+  transition: transform 0.15s, box-shadow 0.15s;
 }
-.node:not(:disabled):active { transform: translateY(6px); box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25); }
-.stop.current .node { box-shadow: 0 8px 0 rgba(0, 0, 0, 0.25), 0 0 0 8px rgba(255, 185, 46, 0.6); animation: pulse 1.8s ease-in-out infinite; }
-.stop.locked .node { background: #b9cdd0; box-shadow: 0 8px 0 #9db3b7; cursor: not-allowed; }
+.node:not(:disabled):hover { transform: translateY(-2px); box-shadow: 0 12px 0 rgba(0, 0, 0, 0.25), inset 0 -4px 0 rgba(0,0,0,0.15); }
+.node:not(:disabled):active { transform: translateY(6px); box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25), inset 0 -2px 0 rgba(0,0,0,0.15); }
+.stop.current .node { box-shadow: 0 10px 0 rgba(0, 0, 0, 0.25), 0 0 0 8px rgba(255, 185, 46, 0.6); animation: pulse 1.8s ease-in-out infinite; }
+.stop.locked .node { background: #b9cdd0; box-shadow: 0 8px 0 #9db3b7; cursor: not-allowed; filter: grayscale(100%); }
 .check {
   position: absolute; right: -4px; bottom: -4px; width: 32px; height: 32px; display: grid; place-items: center;
   border-radius: 50%; background: var(--ok); border: 3px solid var(--bg); font-size: 16px; font-weight: 900;
 }
-.stop-title { margin-top: 14px; font-size: 19px; line-height: 1.25; }
-.stop-sub { font-size: 15px; }
-.stop-info { margin-top: 2px; font-size: 14px; font-weight: 800; color: var(--sea); }
-.stop.locked .stop-title, .stop.locked .stop-sub { opacity: 0.6; }
+.stop-title { margin-top: 18px; font-size: 20px; font-weight: 700; line-height: 1.1; }
+.stop-sub { font-size: 15px; font-weight: 600; color: #555; }
+.stop-info { margin-top: 4px; font-size: 15px; font-weight: 800; color: var(--sea); background: #fff; padding: 2px 10px; border-radius: 99px; border: 2px solid var(--line); }
 
 /* ── Mengerjakan soal ── */
 .lesson-top { display: flex; align-items: flex-start; padding-right: 16px; }
-.close { margin: 14px 0 0 12px; width: 44px; height: 44px; flex: none; border: 0; background: transparent; font-size: 22px; color: var(--ink); }
-.qcard { flex: 1; display: flex; flex-direction: column; padding: 8px 16px 0; animation: enter 0.25s ease-out; }
-.speak { align-self: flex-start; margin-bottom: 8px; padding: 6px 14px; border: 2px solid var(--line); border-radius: 999px; background: #fff; color: var(--sea); font-size: 15px; font-weight: 800; }
-.passage { margin: 0 0 12px; padding: 12px 14px; background: #fff; border: 2px solid var(--line); border-left: 8px solid var(--sea); border-radius: 12px; }
-.prompt { margin: 6px 0 16px; font-size: 22px; font-weight: 900; line-height: 1.35; white-space: pre-line; }
-.options { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.close { margin: 14px 0 0 12px; width: 44px; height: 44px; flex: none; border: 0; background: transparent; font-size: 24px; font-weight: 800; color: var(--bad); }
+.qcard { flex: 1; display: flex; flex-direction: column; padding: 12px 16px 0; animation: enter 0.25s ease-out; }
+.speak { align-self: flex-start; margin-bottom: 12px; padding: 8px 16px; border: 2px solid var(--line); border-radius: 999px; background: #fff; color: var(--sea); font-size: 16px; font-weight: 700; box-shadow: 0 4px 0 var(--line); transition: transform 0.1s; }
+.speak:active { transform: translateY(4px); box-shadow: 0 0 0 var(--line); }
+.passage { margin: 0 0 12px; padding: 16px; background: #fff; border: 2px solid var(--line); border-left: 8px solid var(--sea); border-radius: 12px; font-weight: 600; }
+.prompt { margin: 6px 0 20px; font-size: 24px; font-weight: 800; line-height: 1.35; white-space: pre-line; }
+.options { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; }
+
+/* Tombol Jawaban dengan 3D Kuat */
 .option {
   width: 100%; min-height: 64px; display: flex; align-items: center; gap: 12px; text-align: left;
-  padding: 10px 16px; background: #fff; color: var(--ink); font-size: 20px; font-weight: 800;
-  border: 2px solid var(--line); border-bottom-width: 6px; border-radius: 16px;
-  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+  padding: 12px 16px; background: #fff; color: var(--ink); font-size: 20px; font-weight: 700;
+  border: 2px solid var(--line); border-radius: 16px;
+  box-shadow: 0 6px 0 var(--line); /* Efek 3D utama */
+  margin-bottom: 6px; /* Ruang untuk shadow */
+  transition: background 0.15s, border-color 0.15s, transform 0.1s, box-shadow 0.1s;
 }
 .option:not(:disabled):hover { background: #f3fbfa; border-color: var(--sea); }
-.option:not(:disabled):active { transform: translateY(3px); border-bottom-width: 3px; }
+.option:not(:disabled):active { transform: translateY(6px); box-shadow: 0 0 0 var(--line); }
 .option:disabled { cursor: default; }
-.key { width: 34px; height: 34px; flex: none; display: grid; place-items: center; border: 2px solid var(--line); border-radius: 10px; font-size: 16px; }
-.option.is-correct { background: var(--ok-bg); border-color: var(--ok); color: var(--ok-dark); }
-.option.is-wrong { background: var(--bad-bg); border-color: var(--bad); color: var(--bad-dark); animation: shake 0.3s; }
-.option.is-dim { opacity: 0.55; }
+.key { width: 36px; height: 36px; flex: none; display: grid; place-items: center; border: 2px solid var(--line); border-radius: 10px; font-size: 16px; font-weight: 800; background: var(--bg); }
+.option.is-correct { background: var(--ok-bg); border-color: var(--ok); color: var(--ok-dark); box-shadow: 0 6px 0 var(--ok); }
+.option.is-wrong { background: var(--bad-bg); border-color: var(--bad); color: var(--bad-dark); box-shadow: 0 6px 0 var(--bad); animation: shake 0.3s; }
+.option.is-dim { opacity: 0.55; box-shadow: 0 2px 0 var(--line); transform: translateY(4px); }
 
-.feedback { position: sticky; bottom: 0; margin: 20px -16px 0; padding: 14px 16px 18px; border-top: 3px solid; }
+.feedback { position: sticky; bottom: 0; margin: 20px -16px 0; padding: 20px 16px 24px; border-top: 3px solid; border-radius: 24px 24px 0 0; }
 .feedback.ok { background: var(--ok-bg); border-color: var(--ok); color: var(--ok-dark); }
 .feedback.bad { background: var(--bad-bg); border-color: var(--bad); color: var(--bad-dark); }
-.feedback h3 { margin: 0 0 4px; font-size: 20px; }
-.feedback p { margin: 0 0 6px; font-size: 17px; color: var(--ink); }
+.feedback h3 { margin: 0 0 8px; font-size: 22px; font-weight: 800; }
+.feedback p { margin: 0 0 12px; font-size: 18px; color: var(--ink); font-weight: 600; }
 
 .btn {
   width: 100%; min-height: 56px; margin-top: 10px; border: 0; border-radius: 16px;
-  background: var(--ok); color: #fff; font-size: 20px; font-weight: 900; box-shadow: 0 5px 0 var(--ok-dark);
+  background: var(--ok); color: #fff; font-size: 22px; font-weight: 800; text-transform: uppercase;
+  box-shadow: 0 6px 0 var(--ok-dark); margin-bottom: 6px;
 }
-.btn:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--ok-dark); }
-.feedback.bad .btn { background: var(--bad); box-shadow: 0 5px 0 var(--bad-dark); }
-.btn-ghost { background: transparent; color: var(--sea); box-shadow: none; border: 2px solid var(--line); }
+.btn:active { transform: translateY(6px); box-shadow: 0 0 0 var(--ok-dark); }
+.feedback.bad .btn { background: var(--bad); box-shadow: 0 6px 0 var(--bad-dark); }
+.btn-ghost { background: transparent; color: var(--sea); box-shadow: 0 6px 0 var(--line); border: 2px solid var(--line); }
+.btn-ghost:active { transform: translateY(6px); box-shadow: 0 0 0 var(--line); }
 
 /* ── Hasil ── */
-.result h1 { margin: 8px 0; font-size: 30px; }
-.result-emoji { font-size: 72px; }
-.result-score { font-size: 22px; font-weight: 900; margin: 0 0 8px; }
+.result h1 { margin: 8px 0; font-size: 36px; font-weight: 800; }
+.result-emoji { font-size: 80px; filter: drop-shadow(0 4px 0 rgba(0,0,0,0.1)); animation: pulse 2s infinite; }
+.result-score { font-size: 24px; font-weight: 800; margin: 0 0 12px; color: var(--sea); }
+.result p { font-weight: 600; font-size: 18px; }
 .result .btn { max-width: 320px; }
 
-@keyframes pulse { 50% { transform: scale(1.06); } }
-@keyframes enter { from { opacity: 0; transform: translateX(16px); } }
-@keyframes shake { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+@keyframes pulse { 50% { transform: scale(1.08); } }
+@keyframes enter { from { opacity: 0; transform: translateY(20px); } }
+@keyframes shake { 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
 
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }

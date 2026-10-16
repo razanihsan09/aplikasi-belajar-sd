@@ -1,27 +1,28 @@
 import { useState } from 'react';
 
 const KEYS = ['A', 'B', 'C', 'D', 'E'];
-const canSpeak = typeof window !== 'undefined' && 'speechSynthesis' in window;
+
+// Efek suara gamifikasi gratis dari repositori Google
+const SOUND_CORRECT = 'https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg';
+const SOUND_WRONG = 'https://actions.google.com/sounds/v1/cartoon/slip.ogg';
 
 export default function QuestionCard({ question, isLast, onAnswer, onNext }) {
   const [selected, setSelected] = useState(null);
   const answered = selected !== null;
   const isCorrect = answered && selected === question.correctIndex;
 
-  const choose = (index) => {
-    if (answered) return;
-    setSelected(index);
-    onAnswer(index === question.correctIndex);
+  const playSound = (correct) => {
+    const audio = new Audio(correct ? SOUND_CORRECT : SOUND_WRONG);
+    audio.volume = 0.5;
+    audio.play().catch(() => { /* Abaikan jika browser memblokir autoplay */ });
   };
 
-  const speak = () => {
-    if (!canSpeak) return;
-    window.speechSynthesis.cancel();
-    const text = [question.passage, question.prompt].filter(Boolean).join('. ');
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'id-ID';
-    utterance.rate = 0.9;
-    window.speechSynthesis.speak(utterance);
+  const choose = (index) => {
+    if (answered) return;
+    const correct = index === question.correctIndex;
+    setSelected(index);
+    onAnswer(correct);
+    playSound(correct); // Mainkan suara saat dipilih
   };
 
   const optionClass = (index) => {
@@ -33,12 +34,6 @@ export default function QuestionCard({ question, isLast, onAnswer, onNext }) {
 
   return (
     <section className="qcard">
-      {canSpeak && (
-        <button type="button" className="speak" onClick={speak}>
-          🔊 Dengarkan soal
-        </button>
-      )}
-
       {question.passage && <blockquote className="passage">{question.passage}</blockquote>}
       <h2 className="prompt">{question.prompt}</h2>
 
@@ -52,7 +47,10 @@ export default function QuestionCard({ question, isLast, onAnswer, onNext }) {
               disabled={answered}
             >
               <span className="key" aria-hidden="true">{KEYS[index]}</span>
-              <span>{text}</span>
+              <span className="grow">{text}</span>
+              {/* Tambahkan ikon centang atau silang setelah dijawab */}
+              {answered && index === question.correctIndex && <span aria-hidden="true">✅</span>}
+              {answered && index === selected && !isCorrect && <span aria-hidden="true">❌</span>}
             </button>
           </li>
         ))}
@@ -60,10 +58,10 @@ export default function QuestionCard({ question, isLast, onAnswer, onNext }) {
 
       {answered && (
         <div className={`feedback ${isCorrect ? 'ok' : 'bad'}`} role="status" aria-live="polite">
-          <h3>{isCorrect ? '✅ Hebat, jawabanmu benar!' : '❌ Belum tepat, tidak apa-apa.'}</h3>
+          <h3>{isCorrect ? '🌟 Hebat, jawabanmu benar!' : 'Oops! Belum tepat.'}</h3>
           {!isCorrect && (
             <p>
-              Jawaban yang benar: <strong>{question.options[question.correctIndex]}</strong>
+              Jawaban yang benar adalah: <strong>{question.options[question.correctIndex]}</strong>
             </p>
           )}
           <p>{question.explanation}</p>

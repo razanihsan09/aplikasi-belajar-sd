@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
+import Confetti from 'react-confetti'; // TAMBAHKAN IMPORT INI
 import { LESSONS_DATA } from './data/lessons';
 import { db, getStats, saveLessonResult, requestPersistentStorage } from './db/db';
 import { getActiveStreak } from './utils/gamification';
@@ -19,8 +20,14 @@ export default function App() {
   const [session, setSession] = useState(null); 
   const [result, setResult] = useState(null);
 
+  // Menyimpan dimensi layar untuk Confetti
+  const [windowSize, setWindowSize] = useState({ width: window.innerWidth, height: window.innerHeight });
+
   useEffect(() => {
     requestPersistentStorage();
+    const handleResize = () => setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   if (!stats || !rows) {
@@ -67,7 +74,6 @@ export default function App() {
     setSession(null);
   };
 
-  // ── Layar: mengerjakan soal ──
   if (session) {
     const { lesson, index } = session;
     const total = lesson.questions.length;
@@ -92,12 +98,22 @@ export default function App() {
     );
   }
 
-  // ── Layar: hasil ──
   if (result) {
     const { lesson, correct, total, passed, xpGained } = result;
     return (
       <main className="app center result">
-        <div className="result-emoji" aria-hidden="true">{passed ? '🎉' : '💪'}</div>
+        {/* RENDER CONFETTI JIKA LULUS */}
+        {passed && (
+          <Confetti 
+            width={windowSize.width} 
+            height={windowSize.height} 
+            recycle={false} 
+            numberOfPieces={400} 
+            gravity={0.15}
+          />
+        )}
+        
+        <div className="result-emoji" aria-hidden="true">{passed ? '🏆' : '💪'}</div>
         <h1>{passed ? 'Modul selesai!' : 'Ayo coba lagi!'}</h1>
         <p className="result-score">
           {correct} dari {total} soal benar
@@ -110,7 +126,7 @@ export default function App() {
             : 'Kamu butuh lebih banyak jawaban benar untuk lulus. Baca penjelasannya lalu coba lagi.'}
         </p>
         <button type="button" className="btn" onClick={() => setResult(null)}>
-          Kembali ke peta belajar
+          Kembali ke peta
         </button>
         <button type="button" className="btn btn-ghost" onClick={() => startLesson(lesson)}>
           Ulangi modul
@@ -119,7 +135,6 @@ export default function App() {
     );
   }
 
-  // ── Layar: peta belajar ──
   return (
     <main className="app">
       <ProgressBar totalXP={stats.totalXP} streak={streak} />
